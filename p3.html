@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="d3.v3.min.js"></script>
+    <script src="p3.js"></script>
+
+</head>
+<body>
+
+    <svg class="sketch"></svg>
+    <svg class="ndsketch"></svg>
+
+    <script>
+
+        var twosketch = new P3("ndsketch");
+
+        var sketch = new P3("sketch");
+
+    sketch.resize(500,500);
+    sketch.background(25,25,250);
+
+    twosketch.resize(300,300);
+    twosketch.background(25,25,100);
+    //console.log(sketch.mouseX);
+
+        //console.log(sketch.that);
+        //console.log(sketch.getmouse());
+        //console.log(twosketch.getmouse());
+
+
+        console.log(sketch.rect(300,300,sketch.width/2,sketch.height/2,"centre"));
+        twosketch.rect(200,200,twosketch.width/2,twosketch.height/2,"centre");
+
+
+
+        sketch.mousemove(function() {
+            sketch.background(sketch.mouseX/2,50,50);
+            sketch.fill(255,255,255);
+            sketch.rect(300,300,sketch.width/2,sketch.height/2,"centre");
+
+
+    });
+    twosketch.mousemove(function() {
+
+        twosketch.background(twosketch.mouseX/2,50,50);
+        twosketch.rect(200,200,twosketch.width/2,twosketch.height/2,"centre");
+
+    });
+        //sketch.rect(300,200,250,250,"centre");
+
+    </script>
+
+</body>
+</html>

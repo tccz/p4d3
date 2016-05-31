@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="d3.v3.min.js"></script>
+</head>
+<body>
+
+
+    <script>
+
+        //Tube Map of Wordtown
+        //Alt changes the colour of our "track"
+
+
+
+        //Initialising a mock "sketch" is easy as peas
+        var width = 1000;
+        var height = 500;
+        var centreX = width/2;
+        var centreY = height/2;
+        var rotator = 0;
+        var zoom = 1; //Scale is intially 100%
+
+        var sketch = d3.select("body")
+                .on("keydown", function() { //Capture all keypresses
+                    console.log(d3.event.key);
+                    write_letter(d3.event.key);
+                })
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+        //Using SVG translations we can emulate Processing translate() feature
+        textG = sketch.append("g") //First, we create a svgGroup that will hold our elements
+                .attr("transform", "translate("+centreX+","+centreY+")");
+                //.attr("transform","scale("+zoom+")");
+
+
+        var lettersAr = [];
+
+        function write_letter(key) {
+          var lowerKey = key.toLowerCase();
+          if (lowerKey.length === 1 && lowerKey.match(/[A-Z|a-z]/i)) {
+               letterG = sketch.append("g").append("text")
+                      .style("fill", "black")
+                      .style("font-size", "24px")
+                      .style("font-family", "monospace")
+                      .attr("dy", ".35em")
+                      .attr("text-anchor", "middle")
+                      .text(key);
+                centreX += 24;
+                letterG.attr("transform", "translate("+centreX+","+centreY+") rotate("+rotator+")");
+          } else if (key == ',') {
+              rotator += 45;
+              console.log(rotator);
+          }
+        };
+
+        textG.append("rect")
+                .attr("class","selectme").attr("id","rectangle")
+                .attr({"x":0,"y":0,"width":150,"height":100})
+                .style("fill","lightgreen");
+
+
+
+    </script>
+
+</body>
+</html>

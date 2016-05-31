@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="d3.v3.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>P.1.0</title>
+</head>
+<body>
+
+    <!-- First implementation of "Generative Design" in D3.js -->
+
+    <!-- Drawing SVG element -->
+    <svg class="sketch"></svg>
+
+    <script>
+
+
+        function centre_rect (rx, ry, bx, by) {
+
+            if (!bx && !by) {
+                bx = width/2;
+                by = height/2;
+            }
+
+
+            var returnObj = {
+                x: (bx) - rx/2,
+                y: (by) - ry/2
+            };
+
+            return returnObj;
+
+        }
+
+        var sketch = d3.select(".sketch"); //Bind svg area to sketch variable and define our working area
+        var backgroundColour = d3.hsl(360,1,1);
+        var rectColour;
+        var height = 720;
+        var width = 720;
+
+
+        sketch.attr("width", width).attr("height", height); // Define sketch size by setting attributes
+        background = sketch.append("rect").attr("x",0).attr("y",0).attr("width", width).attr("height", height).attr("fill", backgroundColour);
+
+
+        var rect = sketch.append("rect").attr("x", centre_rect(360,360).x).attr("y", centre_rect(360,360).y).attr("width", 360).attr("height", 360); // Append a rectangle to the sketch area
+
+
+        sketch.on('mousemove', function () {
+
+            var mouseX = d3.mouse(this)[0];
+            var mouseY = d3.mouse(this)[1];
+
+            backgroundColour = d3.hsl(mouseX / 2, .5, .5);
+            background.attr("fill", backgroundColour);
+
+            rectColour = d3.hsl(360 - mouseY, .5, .5);
+            rect.attr("width", mouseX + 1).attr("height", mouseX + 1).attr("fill", rectColour).attr("x", centre_rect(mouseX + 1,mouseX + 1).x).attr("y", centre_rect(mouseX + 1,mouseX + 1).y);
+
+        });
+
+
+
+
+
+    </script>
+
+
+</body>
+</html>
