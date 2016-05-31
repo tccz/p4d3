@@ -18,49 +18,117 @@
         //Initialising a mock "sketch" is easy as peas
         var width = 1000;
         var height = 500;
-        var centreX = width/2;
+        var centreX = 100;
         var centreY = height/2;
         var rotator = 0;
         var zoom = 1; //Scale is intially 100%
+        var fontSize = 24;
+        var written = "";
 
         var sketch = d3.select("body")
                 .on("keydown", function() { //Capture all keypresses
-                    console.log(d3.event.key);
-                    write_letter(d3.event.key);
+                    written += d3.event.key;
+                    render_text(written);
                 })
                 .append("svg")
+                .attr("id", "textArea")
                 .attr("width", width)
                 .attr("height", height);
 
         //Using SVG translations we can emulate Processing translate() feature
-        textG = sketch.append("g") //First, we create a svgGroup that will hold our elements
-                .attr("transform", "translate("+centreX+","+centreY+")");
+        textG = sketch.append("g"); //First, we create a svgGroup that will hold our elements
+                //.attr("transform", "translate("+centreX+","+centreY+")");
                 //.attr("transform","scale("+zoom+")");
 
 
-        var lettersAr = [];
 
-        function write_letter(key) {
-          var lowerKey = key.toLowerCase();
-          if (lowerKey.length === 1 && lowerKey.match(/[A-Z|a-z]/i)) {
-               letterG = sketch.append("g").append("text")
-                      .style("fill", "black")
-                      .style("font-size", "24px")
-                      .style("font-family", "monospace")
-                      .attr("dy", ".35em")
-                      .attr("text-anchor", "middle")
-                      .text(key);
-                centreX += 24;
-                letterG.attr("transform", "translate("+centreX+","+centreY+") rotate("+rotator+")");
-          } else if (key == ',') {
-              rotator += 45;
-              console.log(rotator);
-          }
+        function render_text(tText) {
+
+            //Purge previous rendering
+            d3.select("g").remove();
+            textG = sketch.append("g")
+                    .attr("id", "tesst");
+                    //.attr("transform", "translate("+centreX+","+centreY+")");
+
+            var textAr = [];
+            var textCol = "";
+            var transX = 0;
+            var transY = 0;
+            var rotateVal = 0;
+
+            //Iterate over String of typed text
+            for (var i = 0, len = tText.length; i < len; i++) {
+
+                switch(tText.charAt(i)) {
+                    case '.':
+                        textCol = "";
+                        rotateVal += 45;
+                        prevBox = d3.select(textAr[textAr.length-1]).node().getBoundingClientRect();
+                        prevCo = d3.select(textAr[textAr.length-1]).node().getCTM();
+                        transX += prevBox.width;
+                            console.log(prevBox);
+                            console.log(d3.select(textAr[textAr.length-1]).node().getCTM())
+                        console.log(d3.select(textAr[textAr.length-1]).node().getBBox())
+
+                            //transY = prevBox.bottom - prevBox.top;
+                            //transX = prevBox.right - centreY;
+
+                        break;
+
+
+                    default:
+
+                     if (textCol.length === 0) {
+                     if (textAr.length > 0) {
+
+                         textG.append("text")
+                                 .style("fill", "black")
+                                 .style("font-size", fontSize)
+                                 .style("font-family", "monospace")
+                                 .attr("id", "te_"+textAr.length)
+                                .attr("dy", ".35em")
+                                 .attr("x", transX)
+                                 .attr("y", transY)
+                         .attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")");
+                                 //.attr("transform", "translate("+transX+","+transY+") rotate("+rotateVal+" 0 250)");
+                                 //.attr("transform", "translate("+transX+","+transY+") rotate("+rotateVal+" "+transX+" "+transY+")");
+                                 //.attr("transform", "rotate("+rotateVal+" "+transX+" 0)");
+
+
+                            textAr.push("#te_"+textAr.length);
+
+                     } else {
+
+                         textG.append("text")
+                                 .style("fill", "black")
+                                 .style("font-size", fontSize)
+                                 .style("font-family", "monospace")
+                                 .attr("id", "te_"+0)
+                                .attr("dy", ".35em");
+
+
+                         textAr.push("#te_0");
+                     }
+
+                } else {
+
+                         //textAr[textAr.length].text(textCol);
+                        d3.select(textAr[textAr.length-1]).text(textCol);
+                     }
+
+                        textCol += tText.charAt(i);
+
+                }
+
+
+            }
+
         };
 
         textG.append("rect")
                 .attr("class","selectme").attr("id","rectangle")
                 .attr({"x":0,"y":0,"width":150,"height":100})
+                .attr("transform", "rotate(45)")
                 .style("fill","lightgreen");
 
 
