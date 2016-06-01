@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="d3.v3.min.js"></script>
+
+</head>
+<body>
+
+    <script>
+
+        var sketch = d3.select("body")
+                .append("svg")
+                .attr("id", "textArea")
+                .attr("width", 1000)
+                .attr("height", 1000);
+
+        //Using SVG translations we can emulate Processing translate() feature
+        textG = sketch.append("g");
+        textG.attr("transform", "translate(100,500)");
+        textG.append("text")
+                .style("fill", "black")
+                .style("font-size", 24)
+                .style("font-family", "monospace")
+                //.attr("x", "100")
+                //.attr("y", transY)
+                //.attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")")
+                .text("TEST1");
+
+        textG.append("text")
+                .style("fill", "black")
+                .style("font-size", 24 )
+                .style("font-family", "monospace")
+                .attr("x", 75)
+                //.attr("y", transY)
+                //.attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")")
+                .text("TEST2");
+
+        newG = textG.append("g")
+                //.attr("x", 24*5)
+                .attr("transform", "translate(150,0) rotate(45, 0, 0)");
+
+        newG.append("text")
+                .style("fill", "black")
+                .style("font-size", 24 )
+                .style("font-family", "monospace")
+                //.attr("x", 24*5)
+                //.attr("y", transY)
+                //.attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")")
+                .text("TEST3");
+
+
+        TwoNewG = newG.append("g")
+        //.attr("x", 24*5)
+                .attr("transform", "translate(75,0) rotate(45, 0, 0)");
+
+        TwoNewG.append("text")
+                .style("fill", "black")
+                .style("font-size", 24 )
+                .style("font-family", "monospace")
+                //.attr("x", 24*5)
+                //.attr("y", transY)
+                //.attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")")
+                .text("TEST4");
+
+        ThreeNewG = TwoNewG.append("g")
+        //.attr("x", 24*5)
+                .attr("transform", "translate(75,0) rotate(45, 0, 0)");
+
+        ThreeNewG.append("text")
+                .style("fill", "black")
+                .style("font-size", 24 )
+                .style("font-family", "monospace")
+                //.attr("x", 24*5)
+                //.attr("y", transY)
+                //.attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")")
+                .text("TEST5");
+
+    </script>
+
+</body>
+</html>

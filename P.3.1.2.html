@@ -8,132 +8,132 @@
 <body>
 
 
-    <script>
+<script>
 
-        //Tube Map of Wordtown
-        //Alt changes the colour of our "track"
+    //Tube Map of Wordtown
+    //Alt changes the colour of our "track
 
+    //Initialising a mock "sketch" is easy as peas
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var centreX = 100;
+    var centreY = height/2;
+    var rotator = 0;
+    var zoom = 1; //Scale is intially 100%
+    var fontSize = 24;
+    var written = "";
+    var colour = d3.rgb(25,25,25);
 
+    function c_random(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-        //Initialising a mock "sketch" is easy as peas
-        var width = 1000;
-        var height = 500;
-        var centreX = 100;
-        var centreY = height/2;
-        var rotator = 0;
-        var zoom = 1; //Scale is intially 100%
-        var fontSize = 24;
-        var written = "";
-
-        var sketch = d3.select("body")
-                .on("keydown", function() { //Capture all keypresses
-                    written += d3.event.key;
-                    render_text(written);
-                })
-                .append("svg")
-                .attr("id", "textArea")
-                .attr("width", width)
-                .attr("height", height);
-
-        //Using SVG translations we can emulate Processing translate() feature
-        textG = sketch.append("g"); //First, we create a svgGroup that will hold our elements
-                //.attr("transform", "translate("+centreX+","+centreY+")");
-                //.attr("transform","scale("+zoom+")");
-
-
-
-        function render_text(tText) {
-
-            //Purge previous rendering
-            d3.select("g").remove();
-            textG = sketch.append("g")
-                    .attr("id", "tesst");
-                    //.attr("transform", "translate("+centreX+","+centreY+")");
-
-            var textAr = [];
-            var textCol = "";
-            var transX = 0;
-            var transY = 0;
-            var rotateVal = 0;
-
-            //Iterate over String of typed text
-            for (var i = 0, len = tText.length; i < len; i++) {
-
-                switch(tText.charAt(i)) {
-                    case '.':
-                        textCol = "";
-                        rotateVal += 45;
-                        prevBox = d3.select(textAr[textAr.length-1]).node().getBoundingClientRect();
-                        prevCo = d3.select(textAr[textAr.length-1]).node().getCTM();
-                        transX += prevBox.width;
-                            console.log(prevBox);
-                            console.log(d3.select(textAr[textAr.length-1]).node().getCTM())
-                        console.log(d3.select(textAr[textAr.length-1]).node().getBBox())
-
-                            //transY = prevBox.bottom - prevBox.top;
-                            //transX = prevBox.right - centreY;
-
-                        break;
-
-
-                    default:
-
-                     if (textCol.length === 0) {
-                     if (textAr.length > 0) {
-
-                         textG.append("text")
-                                 .style("fill", "black")
-                                 .style("font-size", fontSize)
-                                 .style("font-family", "monospace")
-                                 .attr("id", "te_"+textAr.length)
-                                .attr("dy", ".35em")
-                                 .attr("x", transX)
-                                 .attr("y", transY)
-                         .attr("transform", "rotate("+rotateVal+" "+transX+" "+transY+")");
-                                 //.attr("transform", "translate("+transX+","+transY+") rotate("+rotateVal+" 0 250)");
-                                 //.attr("transform", "translate("+transX+","+transY+") rotate("+rotateVal+" "+transX+" "+transY+")");
-                                 //.attr("transform", "rotate("+rotateVal+" "+transX+" 0)");
-
-
-                            textAr.push("#te_"+textAr.length);
-
-                     } else {
-
-                         textG.append("text")
-                                 .style("fill", "black")
-                                 .style("font-size", fontSize)
-                                 .style("font-family", "monospace")
-                                 .attr("id", "te_"+0)
-                                .attr("dy", ".35em");
-
-
-                         textAr.push("#te_0");
-                     }
-
+    var sketch = d3.select("body")
+            .on("keydown", function() { //Capture all keypresses
+                console.log(d3.event.keyCode);
+                //Check for control keys before passing on (=,-,ALT,<-,etc.)
+                if (d3.event.key === "+") {
+                    zoom += .1;
+                } else if (d3.event.key === "-") {
+                    zoom -= .1;
+                } else if (d3.event.keyCode == 8) {
+                    written = written.slice(0,-1);
+                } else if (d3.event.keyCode == 18) {
+                    colour= d3.rgb(c_random(0,255), c_random(0,255), c_random(0,255));
                 } else {
-
-                         //textAr[textAr.length].text(textCol);
-                        d3.select(textAr[textAr.length-1]).text(textCol);
-                     }
-
-                        textCol += tText.charAt(i);
-
+                    written += d3.event.key;
+                    console.log(d3.event.key);
                 }
 
 
+                render_text(written);
+            })
+            .append("svg")
+            .attr("id", "textArea")
+            .attr("width", width)
+            .attr("height", height);
+
+    /* Function to retrieve the width of a specific character
+     *  Takes into account kerning, etc.
+     * */
+    function get_text_width (letter) {
+        sketch.append("text") //Append Textbox "out of bound"
+                .attr("x", -100)
+                .attr("y", -100)
+                .text(letter)
+                .attr("id", "fontsizeID");
+        sizeBox = d3.select("#fontsizeID").node().getBoundingClientRect(); //Retrieve surrounding rectangle
+        letterW = sizeBox.width; //Save its width
+        sketch.select("#fontsizeID").remove(); //And remove it
+        return (1.5 *letterW);
+    };
+
+    //Using SVG translations we can emulate Processing translate() feature
+    textG = sketch.append("g"); //First, we create a svgGroup that will hold our elements
+
+    function render_text(tText) {
+
+        //Purge previous rendering
+        d3.select("g").remove();
+        textG = sketch.append("g")
+                .attr("id", "tesst")
+                .attr("transform", "scale("+zoom+") translate("+centreX+","+centreY+")");
+
+
+        var textAr = [];
+        var rotateVal = 0;
+        var offX = get_text_width("M");
+
+        textAr.push(textG);
+
+        function writeLetter(letter, rotation) {
+
+            textAr[textAr.length-1].append("text")
+                    .style("fill", colour)
+                    .style("font-size", 24 )
+                    .style("font-family", "sans")
+                    .attr("transform", "translate("+offX+ " 0)")
+                    .text(letter);
+            offX += get_text_width(letter);
+        }
+
+        //Iterate over String of typed text
+        for (var i = 0, len = tText.length; i < len; i++) {
+
+            switch (tText.charAt(i)) {
+
+                case ' ':
+
+                    textAr[textAr.length-1].append("rect")
+                            .attr("transform", "translate("+offX+ " "+ (-.8*get_text_width("M"))+")")
+                            .attr("width", get_text_width("M"))
+                            .attr("height", get_text_width("M"))
+                            .attr("fill", colour);
+                    offX += get_text_width("M");
+                    break;
+
+                case ',':
+                    textAr.push(textAr[textAr.length-1].append("g")
+                            .attr("transform", "translate("+offX+" 0) rotate(-45, 0, 0)"));
+                    rotateVal += -45;
+                    writeLetter(" ");
+                    offX = 0;
+                    break;
+
+                case '.':
+                    textAr.push(textAr[textAr.length-1].append("g")
+                            .attr("transform", "translate("+offX+" 0) rotate(45, 0, 0)"));
+                    rotateVal += 45;
+                    writeLetter(" ");
+                    offX = 0;
+                    break;
+
+                default:
+                    writeLetter(tText.charAt(i));
             }
-
-        };
-
-        textG.append("rect")
-                .attr("class","selectme").attr("id","rectangle")
-                .attr({"x":0,"y":0,"width":150,"height":100})
-                .attr("transform", "rotate(45)")
-                .style("fill","lightgreen");
-
-
-
-    </script>
+        }
+    };
+</script>
 
 </body>
 </html>
