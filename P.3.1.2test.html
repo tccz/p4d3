@@ -54,7 +54,7 @@
                 .attr("height", height);
 
         /* Function to retrieve the width of a specific character
-        *  Takes into account kerning, etc.
+        *
         * */
         function get_text_width (letter) {
             sketch.append("text") //Append Textbox "out of bound"
@@ -116,7 +116,7 @@
                         textAr.push(textAr[textAr.length-1].append("g")
                                 .attr("transform", "translate("+offX+" 0) rotate(-45, 0, 0)"));
                         rotateVal += -45;
-                        writeLetter(" ");
+                        writeLetter("  ");
                         offX = 0;
                         break;
 
@@ -124,7 +124,7 @@
                         textAr.push(textAr[textAr.length-1].append("g")
                                 .attr("transform", "translate("+offX+" 0) rotate(45, 0, 0)"));
                         rotateVal += 45;
-                        writeLetter(" ");
+                        writeLetter("  ");
                         offX = 0;
                         break;
 

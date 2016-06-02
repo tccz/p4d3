@@ -36,13 +36,14 @@
                     zoom += .1;
                 } else if (d3.event.key === "-") {
                     zoom -= .1;
-                } else if (d3.event.keyCode == 8) {
+                } else if (d3.event.keyCode === 8) {
                     written = written.slice(0,-1);
-                } else if (d3.event.keyCode == 18) {
+                } else if (d3.event.keyCode === 18) {
                     colour= d3.rgb(c_random(0,255), c_random(0,255), c_random(0,255));
                 } else {
+
                     written += d3.event.key;
-                    console.log(d3.event.key);
+                    console.log(d3.event.keyCode);
                 }
 
 
@@ -97,6 +98,40 @@
             offX += get_text_width(letter);
         }
 
+        function render_arc() {
+
+            //http://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+            function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+                var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+                return {
+                    x: centerX + (radius * Math.cos(angleInRadians)),
+                    y: centerY + (radius * Math.sin(angleInRadians))
+                };
+            }
+
+            function describeArc(x, y, radius, startAngle, endAngle){
+
+                var start = polarToCartesian(x, y, radius, endAngle);
+                var end = polarToCartesian(x, y, radius, startAngle);
+
+                var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+
+                var d = [
+                    "M", start.x, start.y,
+                    "A", radius, radius, 0, arcSweep, 0, end.x, end.y
+                ].join(" ");
+
+                return d;
+            }
+
+            textAr[textAr.length-1].append("path")
+                    .style("fill", "none")
+                    .style("stroke", colour)
+                    .style("stroke-width","15")
+                    .attr("d", describeArc(0, 0, 8, 315, 360   ));
+        }
+
         //Iterate over String of typed text
         for (var i = 0, len = tText.length; i < len; i++) {
 
@@ -113,10 +148,11 @@
                     break;
 
                 case ',':
+
                     textAr.push(textAr[textAr.length-1].append("g")
                             .attr("transform", "translate("+offX+" 0) rotate(-45, 0, 0)"));
                     rotateVal += -45;
-                    writeLetter(" ");
+                    //writeLetter(" ");
                     offX = 0;
                     break;
 
@@ -124,6 +160,8 @@
                     textAr.push(textAr[textAr.length-1].append("g")
                             .attr("transform", "translate("+offX+" 0) rotate(45, 0, 0)"));
                     rotateVal += 45;
+                    render_arc();
+
                     writeLetter(" ");
                     offX = 0;
                     break;
